@@ -1,10 +1,12 @@
 // ============================================
 // BPB PANEL - COMPLETE TELEGRAM BOT (FULLY INTEGRATED)
 // Version: 4.1.3 - FULL BPB PANEL CONTROL
+// CONVERTED TO ES MODULES FOR CLOUDFLARE WORKERS
 // ============================================
 
-const { Telegraf, Markup } = require('telegraf');
-const crypto = require('crypto');
+import { Telegraf, Markup } from 'telegraf';
+import crypto from 'crypto';
+import JSZip from 'jszip';
 
 // ==================== التوكن ومعرف المالك ====================
 const BOT_TOKEN = '8513010794:AAH9_FatomlJIIPbCBajnYuRhYy2BcqwBxY';
@@ -616,7 +618,6 @@ Reserved = ${settings.warpReserved}`;
 }
 
 function generateAllConfigsZip() {
-    const JSZip = require('jszip');
     const zip = new JSZip();
     
     zip.file("vless_xray.json", generateVlessXray());
@@ -1147,15 +1148,59 @@ bot.on('text', async (ctx) => {
     }
 });
 
-// ==================== تشغيل البوت ====================
+// ==================== تصدير البوت لـ Cloudflare Workers ====================
 console.log('🤖 BPB PANEL BOT V4.1.3 is starting...');
 console.log('📦 Bot Token:', BOT_TOKEN ? 'Set' : 'Missing');
 console.log('👑 Owner ID:', OWNER_ID);
 console.log('✅ BPB PANEL FULLY INTEGRATED!');
 
-bot.launch()
-    .then(() => console.log('✅ BPB PANEL BOT is running!'))
-    .catch(err => console.error('❌ Error starting bot:', err));
-
-process.once('SIGINT', () => bot.stop('SIGINT'));
-process.once('SIGTERM', () => bot.stop('SIGTERM'));
+// تصدير معالج Webhook لـ Cloudflare Workers
+export default {
+    async fetch(request, env, ctx) {
+        try {
+            const url = new URL(request.url);
+            
+            // معالج Webhook من تيليجرام
+            if (url.pathname === '/webhook' && request.method === 'POST') {
+                const update = await request.json();
+                await bot.handleUpdate(update);
+                return new Response('OK', { status: 200 });
+            }
+            
+            // معالج الإعدادات لـ Cloudflare Workers
+            if (url.pathname === '/setup') {
+                // تعيين Webhook (يمكن تشغيله مرة واحدة)
+                const webhookUrl = `${url.origin}/webhook`;
+                const token = BOT_TOKEN;
+                const response = await fetch(`https://api.telegram.org/bot${token}/setWebhook?url=${webhookUrl}`);
+                const result = await response.json();
+                return new Response(JSON.stringify(result, null, 2), {
+                    headers: { 'Content-Type': 'application/json' }
+                });
+            }
+            
+            // الصفحة الرئيسية
+            return new Response(`
+                <html>
+                <head><title>BPB Panel Bot</title></head>
+                <body>
+                    <h1>🤖 BPB Panel Bot</h1>
+                    <p>Version: 4.1.3</p>
+                    <p>Status: Running ✅</p>
+                    <p>Owner ID: ${OWNER_ID}</p>
+                    <p>Settings Count: ${Object.keys(settings).length}</p>
+                    <hr>
+                    <p>Use /webhook endpoint for Telegram updates</p>
+                    <p>Visit /setup to configure webhook (run once)</p>
+                </body>
+                </html>
+            `, { 
+                status: 200,
+                headers: { 'Content-Type': 'text/html' }
+            });
+        } catch (error) {
+            console.error('Worker error:', error);
+            return new Response(`Error: ${error.message}`, { status: 500 });
+        }
+    }
+};
