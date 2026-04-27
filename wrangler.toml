@@ -1,25 +1,20 @@
-# اسم المشروع كما سيظهر في لوحة تحكم Cloudflare
+# اسم المشروع
 name = "bpb-panel-bot"
 
-# الملف الأساسي للكود
-main = "index.js"
+# الملف الأساسي للكود (تم التعديل ليناسب مسار ملفك في GitHub)
+main = "src/bot.js"
 
-# تاريخ التوافق (يفضل دائماً استخدام تاريخ حديث)
+# تاريخ التوافق
 compatibility_date = "2024-04-01"
 
-# الخطوة الأهم: تفعيل مكتبات Node.js داخل Worker
+# تفعيل مكتبات Node.js الضرورية لـ crypto و telegraf
 compatibility_flags = [ "nodejs_compat" ]
 
-# إعدادات المتغيرات (Variables)
+# إعدادات المتغيرات
 [vars]
 BOT_TOKEN = "8513010794:AAH9_FatomlJIIPbCBajnYuRhYy2BcqwBxY"
 OWNER_ID = "8311254462"
 
-# إذا كنت ستستخدم KV لحفظ الإعدادات مستقبلاً، قم بإلغاء التعليق أدناه:
-# [[kv_namespaces]]
-# binding = "BPB_SETTINGS"
-# id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-
-# إعدادات الأداء
+# إعدادات الأداء والمراقبة
 [observability]
 enabled = true
