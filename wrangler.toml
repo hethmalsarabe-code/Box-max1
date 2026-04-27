@@ -1,6 +1,7 @@
-name = "box-max1"
+name = "box-max3"
 main = "src/bot.js"
 compatibility_date = "2026-04-27"
+compatibility_flags = [ "nodejs_compat" ]
 
 [vars]
 BOT_TOKEN = "8513010794:AAH9_FatomlJIIPbCBajnYuRhYy2BcqwBxY"
