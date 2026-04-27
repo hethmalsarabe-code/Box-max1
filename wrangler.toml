@@ -1,8 +1,25 @@
-name = "box-max3"
-main = "src/bot.js"
-compatibility_date = "2026-04-27"
+# اسم المشروع كما سيظهر في لوحة تحكم Cloudflare
+name = "bpb-panel-bot"
+
+# الملف الأساسي للكود
+main = "index.js"
+
+# تاريخ التوافق (يفضل دائماً استخدام تاريخ حديث)
+compatibility_date = "2024-04-01"
+
+# الخطوة الأهم: تفعيل مكتبات Node.js داخل Worker
 compatibility_flags = [ "nodejs_compat" ]
 
+# إعدادات المتغيرات (Variables)
 [vars]
 BOT_TOKEN = "8513010794:AAH9_FatomlJIIPbCBajnYuRhYy2BcqwBxY"
 OWNER_ID = "8311254462"
+
+# إذا كنت ستستخدم KV لحفظ الإعدادات مستقبلاً، قم بإلغاء التعليق أدناه:
+# [[kv_namespaces]]
+# binding = "BPB_SETTINGS"
+# id = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+
+# إعدادات الأداء
+[observability]
+enabled = true
