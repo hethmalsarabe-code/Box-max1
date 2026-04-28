@@ -1,36 +1,22 @@
 // ============================================
 // BPB PANEL - COMPLETE TELEGRAM BOT (FULLY INTEGRATED)
 // Version: 4.1.3 - FULL BPB PANEL CONTROL
-// CONVERTED TO ES MODULES FOR CLOUDFLARE WORKERS
+// CLOUDFLARE WORKERS OPTIMIZED - FULLY FUNCTIONAL
 // ============================================
 
 import { Telegraf, Markup } from 'telegraf';
-import crypto from 'crypto';
 import JSZip from 'jszip';
 
 // ==================== التوكن ومعرف المالك ====================
 const BOT_TOKEN = '8513010794:AAH9_FatomlJIIPbCBajnYuRhYy2BcqwBxY';
 const OWNER_ID = 8311254462;
 
-// ==================== محاكاة بيئة Cloudflare Workers ====================
-globalThis.fetch = fetch;
-globalThis.Response = Response;
-globalThis.Request = Request;
-globalThis.WebSocket = WebSocket;
-globalThis.crypto = crypto.webcrypto;
+// ==================== بيئة Cloudflare Workers ====================
 globalThis.btoa = (str) => Buffer.from(str).toString('base64');
 globalThis.atob = (str) => Buffer.from(str, 'base64').toString();
 
-// محاكاة KV Namespace
-class KVNamespace {
-    constructor() {
-        this.store = new Map();
-    }
-    async get(key) { return this.store.get(key) || null; }
-    async put(key, value) { this.store.set(key, value); }
-    async delete(key) { this.store.delete(key); }
-}
-globalThis.KVNamespace = KVNamespace;
+// نظام تخزين مؤقت للجلسات (بديل session)
+const userSessions = new Map();
 
 // ==================== الإعدادات العامة ====================
 globalThis.dict = {
@@ -654,7 +640,7 @@ function generateSubscriptionBase64() {
 // ==================== توليد جميع الكونفيجات دفعة واحدة ====================
 async function generateAllConfigs() {
     const zip = generateAllConfigsZip();
-    const buffer = await zip.generateAsync({ type: "nodebuffer" });
+    const buffer = await zip.generateAsync({ type: "uint8array" });
     return buffer;
 }
 
@@ -778,10 +764,14 @@ const usersMenu = () => {
 
 // ==================== تهيئة البوت ====================
 const bot = new Telegraf(BOT_TOKEN);
+bot.telegram.setWebhook = async (url) => {
+    const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/setWebhook?url=${url}`);
+    return response.json();
+};
 
 bot.catch((err, ctx) => {
     console.error('Bot error:', err);
-    ctx.reply('⚠️ حدث خطأ، حاول مرة أخرى');
+    if (ctx) ctx.reply('⚠️ حدث خطأ، حاول مرة أخرى');
 });
 
 // ==================== أمر /start ====================
@@ -1100,38 +1090,34 @@ for (const [action, handler] of Object.entries(editHandlers)) {
         }
         
         await ctx.answerCbQuery();
-        ctx.session = { waitingFor: action };
+        userSessions.set(ctx.from.id.toString(), { waitingFor: action });
         await ctx.editMessageText(`${handler.prompt}\n\n(أرسل /cancel للإلغاء)`, { parse_mode: 'Markdown' });
     });
 }
 
 // ==================== معالج النصوص ====================
-bot.use(async (ctx, next) => {
-    ctx.session = ctx.session || {};
-    return next();
-});
-
 bot.on('text', async (ctx) => {
-    if (!ctx.session?.waitingFor) return;
+    const session = userSessions.get(ctx.from.id.toString());
+    if (!session?.waitingFor) return;
     
-    const action = ctx.session.waitingFor;
+    const action = session.waitingFor;
     const value = ctx.message.text.trim();
     
     if (value === '/cancel') {
-        delete ctx.session.waitingFor;
+        userSessions.delete(ctx.from.id.toString());
         await ctx.reply('❌ تم الإلغاء', { ...mainMenu() });
         return;
     }
     
     const handler = editHandlers[action];
     if (!handler) {
-        delete ctx.session.waitingFor;
+        userSessions.delete(ctx.from.id.toString());
         return;
     }
     
     try {
         handler.setter(value);
-        delete ctx.session.waitingFor;
+        userSessions.delete(ctx.from.id.toString());
         
         const message = handler.successMsg ? handler.successMsg(value) : `✅ تم التحديث بنجاح!`;
         await ctx.reply(message, { parse_mode: 'Markdown' });
@@ -1149,12 +1135,6 @@ bot.on('text', async (ctx) => {
 });
 
 // ==================== تصدير البوت لـ Cloudflare Workers ====================
-console.log('🤖 BPB PANEL BOT V4.1.3 is starting...');
-console.log('📦 Bot Token:', BOT_TOKEN ? 'Set' : 'Missing');
-console.log('👑 Owner ID:', OWNER_ID);
-console.log('✅ BPB PANEL FULLY INTEGRATED!');
-
-// تصدير معالج Webhook لـ Cloudflare Workers
 export default {
     async fetch(request, env, ctx) {
         try {
@@ -1163,16 +1143,14 @@ export default {
             // معالج Webhook من تيليجرام
             if (url.pathname === '/webhook' && request.method === 'POST') {
                 const update = await request.json();
-                await bot.handleUpdate(update);
+                ctx.waitUntil(bot.handleUpdate(update));
                 return new Response('OK', { status: 200 });
             }
             
-            // معالج الإعدادات لـ Cloudflare Workers
+            // معالج الإعدادات لـ Cloudflare Workers (تشغيل مرة واحدة)
             if (url.pathname === '/setup') {
-                // تعيين Webhook (يمكن تشغيله مرة واحدة)
                 const webhookUrl = `${url.origin}/webhook`;
-                const token = BOT_TOKEN;
-                const response = await fetch(`https://api.telegram.org/bot${token}/setWebhook?url=${webhookUrl}`);
+                const response = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/setWebhook?url=${webhookUrl}`);
                 const result = await response.json();
                 return new Response(JSON.stringify(result, null, 2), {
                     headers: { 'Content-Type': 'application/json' }
@@ -1189,9 +1167,10 @@ export default {
                     <p>Status: Running ✅</p>
                     <p>Owner ID: ${OWNER_ID}</p>
                     <p>Settings Count: ${Object.keys(settings).length}</p>
+                    <p>Authorized Users: ${authorizedUsers.size}</p>
                     <hr>
-                    <p>Use /webhook endpoint for Telegram updates</p>
-                    <p>Visit /setup to configure webhook (run once)</p>
+                    <p><b>IMPORTANT:</b> Visit <a href="${url.origin}/setup">${url.origin}/setup</a> to configure webhook (run once)</p>
+                    <p>Webhook endpoint: ${url.origin}/webhook</p>
                 </body>
                 </html>
             `, { 
