@@ -1,23 +1,36 @@
 {
-	"name": "bpb-telegram-bot",
-	"version": "4.1.3",
-	"description": "BPB Panel Telegram Bot - Full Control",
-	"homepage": "https://github.com/hethmalsarabe-code/Box-max1.git",
-	"license": "GPL-3.0",
-	"private": true,
-	"main": "bot.js",
-	"type": "commonjs",
-	"scripts": {
-		"start": "node bot.js",
-		"dev": "node bot.js"
-	},
-	"dependencies": {
-		"telegraf": "^4.15.3",
-		"jszip": "^3.10.1"
-	},
-	"keywords": ["vpn", "proxy", "telegram-bot", "xray", "sing-box", "clash", "vless", "trojan", "vmess", "shadowsocks", "warp"],
-	"author": "BPB Panel",
-	"engines": {
-		"node": ">=18.0.0"
-	}
+  "name": "bpb-telegram-bot",
+  "version": "4.1.3",
+  "description": "BPB Panel Telegram Bot - Full Control",
+  "homepage": "https://github.com/hethmalsarabe-code/Box-max1.git",
+  "license": "GPL-3.0",
+  "private": true,
+  "main": "bot.js",
+  "type": "module",
+  "scripts": {
+    "start": "node bot.js",
+    "dev": "node bot.js",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "telegraf": "^4.16.3",
+    "jszip": "^3.10.1"
+  },
+  "keywords": [
+    "vpn",
+    "proxy",
+    "telegram-bot",
+    "xray",
+    "sing-box",
+    "clash",
+    "vless",
+    "trojan",
+    "vmess",
+    "shadowsocks",
+    "warp"
+  ],
+  "author": "M_aximilian",
+  "engines": {
+    "node": ">=18.0.0"
+  }
 }
