@@ -1,20 +1,19 @@
-# اسم المشروع
-name = "bpb-panel-bot"
+# اسم المشروع (يفضل أن يطابق الاسم في لوحة تحكم كلوود فلير)
+name = "box-max3"
 
-# الملف الأساسي للكود (تم التعديل ليناسب مسار ملفك في GitHub)
-main = "src/bot.js"
+# الملف الأساسي - تأكد أن الملف بهذا الاسم في جذر المستودع
+main = "bot.js"
 
-# تاريخ التوافق
-compatibility_date = "2024-04-01"
+# تاريخ التوافق الأحدث لضمان عمل Node.js compat بشكل كامل
+compatibility_date = "2024-09-23"
 
-# تفعيل مكتبات Node.js الضرورية لـ crypto و telegraf
+# تفعيل مكتبات Node.js الضرورية (حل مشكلة crypto و fs)
 compatibility_flags = [ "nodejs_compat" ]
 
-# إعدادات المتغيرات
 [vars]
+# المتغيرات التي سيقرأها الكود
 BOT_TOKEN = "8513010794:AAH9_FatomlJIIPbCBajnYuRhYy2BcqwBxY"
 OWNER_ID = "8311254462"
 
-# إعدادات الأداء والمراقبة
 [observability]
 enabled = true
