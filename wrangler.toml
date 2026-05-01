@@ -1,4 +1,4 @@
-name = "box-max3"
+name = "box-max2"
 
 # الملف الأساسي - الآن المسار صحيح لمجلد src
 main = "src/bot.js"
