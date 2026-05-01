@@ -834,10 +834,10 @@ const menuHandlers = {
         await ctx.answerCbQuery('📦 جاري تجهيز جميع الكونفيجات...');
         try {
             const buffer = await generateAllConfigs();
-            await ctx.replyWithDocument({ source: buffer, filename: `bpb_all_configs_${Date.now()}.zip` });
-            await ctx.reply('✅ تم إرسال جميع الكونفيجات كملف مضغوط');
+            await ctx.telegram.sendDocument(ctx.chat.id, { source: buffer, filename: `bpb_all_configs_${Date.now()}.zip` });
+            await ctx.telegram.sendMessage(ctx.chat.id, '✅ تم إرسال جميع الكونفيجات كملف مضغوط');
         } catch (error) {
-            await ctx.reply(`❌ خطأ: ${error.message}`);
+            await ctx.telegram.sendMessage(ctx.chat.id, `❌ خطأ: ${error.message}`);
         }
     },
     'menu_settings': async (ctx) => {
@@ -892,131 +892,131 @@ for (const [action, handler] of Object.entries(menuHandlers)) {
     bot.action(action, handler);
 }
 
-// ==================== معالج توليد الكونفيجات ====================
+// ==================== معالج توليد الكونفيجات (نسخة مصححة بالكامل) ====================
 
 const generateHandlers = {
     'gen_vless_xray': async (ctx) => {
         await ctx.answerCbQuery('🔨 جاري إنشاء كونفيج VLESS Xray...');
         const config = generateVlessXray();
-        await ctx.replyWithDocument({ source: Buffer.from(config), filename: `vless_xray_${Date.now()}.json` });
-        await ctx.reply('📋 *نص الكونفيج*', { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ النص', config)]]) });
+        await ctx.telegram.sendDocument(ctx.chat.id, { source: Buffer.from(config), filename: `vless_xray_${Date.now()}.json` });
+        await ctx.telegram.sendMessage(ctx.chat.id, '📋 *نص الكونفيج*', { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ النص', config)]]) });
     },
     'gen_vless_singbox': async (ctx) => {
         await ctx.answerCbQuery('🔨 جاري إنشاء كونفيج VLESS Sing-box...');
         const config = generateVlessSingbox();
-        await ctx.replyWithDocument({ source: Buffer.from(config), filename: `vless_singbox_${Date.now()}.json` });
-        await ctx.reply('📋 *نص الكونفيج*', { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ النص', config)]]) });
+        await ctx.telegram.sendDocument(ctx.chat.id, { source: Buffer.from(config), filename: `vless_singbox_${Date.now()}.json` });
+        await ctx.telegram.sendMessage(ctx.chat.id, '📋 *نص الكونفيج*', { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ النص', config)]]) });
     },
     'gen_vless_clash': async (ctx) => {
         await ctx.answerCbQuery('🔨 جاري إنشاء كونفيج VLESS Clash...');
         const config = generateVlessClash();
-        await ctx.replyWithDocument({ source: Buffer.from(config), filename: `vless_clash_${Date.now()}.yaml` });
-        await ctx.reply('📋 *نص الكونفيج*', { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ النص', config)]]) });
+        await ctx.telegram.sendDocument(ctx.chat.id, { source: Buffer.from(config), filename: `vless_clash_${Date.now()}.yaml` });
+        await ctx.telegram.sendMessage(ctx.chat.id, '📋 *نص الكونفيج*', { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ النص', config)]]) });
     },
     'gen_vless_link': async (ctx) => {
         const link = generateVlessLink();
         await ctx.answerCbQuery();
-        await ctx.reply(`📦 *رابط VLESS*\n\n\`${link}\``, { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ الرابط', link)]]) });
+        await ctx.telegram.sendMessage(ctx.chat.id, `📦 *رابط VLESS*\n\n\`${link}\``, { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ الرابط', link)]]) });
     },
     'gen_trojan_xray': async (ctx) => {
         await ctx.answerCbQuery('🔨 جاري إنشاء كونفيج TROJAN Xray...');
         const config = generateTrojanXray();
-        await ctx.replyWithDocument({ source: Buffer.from(config), filename: `trojan_xray_${Date.now()}.json` });
-        await ctx.reply('📋 *نص الكونفيج*', { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ النص', config)]]) });
+        await ctx.telegram.sendDocument(ctx.chat.id, { source: Buffer.from(config), filename: `trojan_xray_${Date.now()}.json` });
+        await ctx.telegram.sendMessage(ctx.chat.id, '📋 *نص الكونفيج*', { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ النص', config)]]) });
     },
     'gen_trojan_singbox': async (ctx) => {
         await ctx.answerCbQuery('🔨 جاري إنشاء كونفيج TROJAN Sing-box...');
         const config = generateTrojanSingbox();
-        await ctx.replyWithDocument({ source: Buffer.from(config), filename: `trojan_singbox_${Date.now()}.json` });
-        await ctx.reply('📋 *نص الكونفيج*', { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ النص', config)]]) });
+        await ctx.telegram.sendDocument(ctx.chat.id, { source: Buffer.from(config), filename: `trojan_singbox_${Date.now()}.json` });
+        await ctx.telegram.sendMessage(ctx.chat.id, '📋 *نص الكونفيج*', { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ النص', config)]]) });
     },
     'gen_trojan_clash': async (ctx) => {
         await ctx.answerCbQuery('🔨 جاري إنشاء كونفيج TROJAN Clash...');
         const config = generateTrojanClash();
-        await ctx.replyWithDocument({ source: Buffer.from(config), filename: `trojan_clash_${Date.now()}.yaml` });
-        await ctx.reply('📋 *نص الكونفيج*', { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ النص', config)]]) });
+        await ctx.telegram.sendDocument(ctx.chat.id, { source: Buffer.from(config), filename: `trojan_clash_${Date.now()}.yaml` });
+        await ctx.telegram.sendMessage(ctx.chat.id, '📋 *نص الكونفيج*', { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ النص', config)]]) });
     },
     'gen_trojan_link': async (ctx) => {
         const link = generateTrojanLink();
         await ctx.answerCbQuery();
-        await ctx.reply(`🔐 *رابط TROJAN*\n\n\`${link}\``, { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ الرابط', link)]]) });
+        await ctx.telegram.sendMessage(ctx.chat.id, `🔐 *رابط TROJAN*\n\n\`${link}\``, { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ الرابط', link)]]) });
     },
     'gen_vmess_xray': async (ctx) => {
         await ctx.answerCbQuery('🔨 جاري إنشاء كونفيج VMESS Xray...');
         const config = generateVmessXray();
-        await ctx.replyWithDocument({ source: Buffer.from(config), filename: `vmess_xray_${Date.now()}.json` });
-        await ctx.reply('📋 *نص الكونفيج*', { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ النص', config)]]) });
+        await ctx.telegram.sendDocument(ctx.chat.id, { source: Buffer.from(config), filename: `vmess_xray_${Date.now()}.json` });
+        await ctx.telegram.sendMessage(ctx.chat.id, '📋 *نص الكونفيج*', { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ النص', config)]]) });
     },
     'gen_vmess_singbox': async (ctx) => {
         await ctx.answerCbQuery('🔨 جاري إنشاء كونفيج VMESS Sing-box...');
         const config = generateVmessSingbox();
-        await ctx.replyWithDocument({ source: Buffer.from(config), filename: `vmess_singbox_${Date.now()}.json` });
-        await ctx.reply('📋 *نص الكونفيج*', { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ النص', config)]]) });
+        await ctx.telegram.sendDocument(ctx.chat.id, { source: Buffer.from(config), filename: `vmess_singbox_${Date.now()}.json` });
+        await ctx.telegram.sendMessage(ctx.chat.id, '📋 *نص الكونفيج*', { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ النص', config)]]) });
     },
     'gen_vmess_clash': async (ctx) => {
         await ctx.answerCbQuery('🔨 جاري إنشاء كونفيج VMESS Clash...');
         const config = generateVmessClash();
-        await ctx.replyWithDocument({ source: Buffer.from(config), filename: `vmess_clash_${Date.now()}.yaml` });
-        await ctx.reply('📋 *نص الكونفيج*', { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ النص', config)]]) });
+        await ctx.telegram.sendDocument(ctx.chat.id, { source: Buffer.from(config), filename: `vmess_clash_${Date.now()}.yaml` });
+        await ctx.telegram.sendMessage(ctx.chat.id, '📋 *نص الكونفيج*', { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ النص', config)]]) });
     },
     'gen_vmess_link': async (ctx) => {
         const link = generateVmessLink();
         await ctx.answerCbQuery();
-        await ctx.reply(`🚀 *رابط VMESS*\n\n\`${link}\``, { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ الرابط', link)]]) });
+        await ctx.telegram.sendMessage(ctx.chat.id, `🚀 *رابط VMESS*\n\n\`${link}\``, { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ الرابط', link)]]) });
     },
     'gen_ss_xray': async (ctx) => {
         await ctx.answerCbQuery('🔨 جاري إنشاء كونفيج Shadowsocks Xray...');
         const config = generateShadowsocksXray();
-        await ctx.replyWithDocument({ source: Buffer.from(config), filename: `shadowsocks_xray_${Date.now()}.json` });
-        await ctx.reply('📋 *نص الكونفيج*', { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ النص', config)]]) });
+        await ctx.telegram.sendDocument(ctx.chat.id, { source: Buffer.from(config), filename: `shadowsocks_xray_${Date.now()}.json` });
+        await ctx.telegram.sendMessage(ctx.chat.id, '📋 *نص الكونفيج*', { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ النص', config)]]) });
     },
     'gen_ss_singbox': async (ctx) => {
         await ctx.answerCbQuery('🔨 جاري إنشاء كونفيج Shadowsocks Sing-box...');
         const config = generateShadowsocksSingbox();
-        await ctx.replyWithDocument({ source: Buffer.from(config), filename: `shadowsocks_singbox_${Date.now()}.json` });
-        await ctx.reply('📋 *نص الكونفيج*', { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ النص', config)]]) });
+        await ctx.telegram.sendDocument(ctx.chat.id, { source: Buffer.from(config), filename: `shadowsocks_singbox_${Date.now()}.json` });
+        await ctx.telegram.sendMessage(ctx.chat.id, '📋 *نص الكونفيج*', { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ النص', config)]]) });
     },
     'gen_ss_link': async (ctx) => {
         const link = generateShadowsocksLink();
         await ctx.answerCbQuery();
-        await ctx.reply(`🔒 *رابط Shadowsocks*\n\n\`${link}\``, { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ الرابط', link)]]) });
+        await ctx.telegram.sendMessage(ctx.chat.id, `🔒 *رابط Shadowsocks*\n\n\`${link}\``, { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ الرابط', link)]]) });
     },
     'gen_warp_standard': async (ctx) => {
         await ctx.answerCbQuery('🔨 جاري إنشاء WARP Standard Config...');
         const config = generateWarpStandard();
-        await ctx.replyWithDocument({ source: Buffer.from(config), filename: `warp_standard_${Date.now()}.conf` });
-        await ctx.reply('📋 *نص الكونفيج*', { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ النص', config)]]) });
+        await ctx.telegram.sendDocument(ctx.chat.id, { source: Buffer.from(config), filename: `warp_standard_${Date.now()}.conf` });
+        await ctx.telegram.sendMessage(ctx.chat.id, '📋 *نص الكونفيج*', { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ النص', config)]]) });
     },
     'gen_warp_pro': async (ctx) => {
         await ctx.answerCbQuery('🔨 جاري إنشاء WARP Pro Config...');
         const config = generateWarpPro();
-        await ctx.replyWithDocument({ source: Buffer.from(config), filename: `warp_pro_${Date.now()}.conf` });
-        await ctx.reply('📋 *نص الكونفيج*', { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ النص', config)]]) });
+        await ctx.telegram.sendDocument(ctx.chat.id, { source: Buffer.from(config), filename: `warp_pro_${Date.now()}.conf` });
+        await ctx.telegram.sendMessage(ctx.chat.id, '📋 *نص الكونفيج*', { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ النص', config)]]) });
     },
     'sub_vless': async (ctx) => {
         const link = generateVlessLink();
         await ctx.answerCbQuery();
-        await ctx.reply(`📦 *رابط VLESS*\n\n\`${link}\``, { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ الرابط', link)]]) });
+        await ctx.telegram.sendMessage(ctx.chat.id, `📦 *رابط VLESS*\n\n\`${link}\``, { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ الرابط', link)]]) });
     },
     'sub_trojan': async (ctx) => {
         const link = generateTrojanLink();
         await ctx.answerCbQuery();
-        await ctx.reply(`🔐 *رابط TROJAN*\n\n\`${link}\``, { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ الرابط', link)]]) });
+        await ctx.telegram.sendMessage(ctx.chat.id, `🔐 *رابط TROJAN*\n\n\`${link}\``, { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ الرابط', link)]]) });
     },
     'sub_vmess': async (ctx) => {
         const link = generateVmessLink();
         await ctx.answerCbQuery();
-        await ctx.reply(`🚀 *رابط VMESS*\n\n\`${link}\``, { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ الرابط', link)]]) });
+        await ctx.telegram.sendMessage(ctx.chat.id, `🚀 *رابط VMESS*\n\n\`${link}\``, { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ الرابط', link)]]) });
     },
     'sub_ss': async (ctx) => {
         const link = generateShadowsocksLink();
         await ctx.answerCbQuery();
-        await ctx.reply(`🔒 *رابط Shadowsocks*\n\n\`${link}\``, { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ الرابط', link)]]) });
+        await ctx.telegram.sendMessage(ctx.chat.id, `🔒 *رابط Shadowsocks*\n\n\`${link}\``, { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ الرابط', link)]]) });
     },
     'sub_base64': async (ctx) => {
         const subscription = generateSubscriptionBase64();
         await ctx.answerCbQuery();
-        await ctx.reply(`📋 *الاشتراك (Base64)*\n\n\`${subscription}\``, { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ الاشتراك', subscription)]]) });
+        await ctx.telegram.sendMessage(ctx.chat.id, `📋 *الاشتراك (Base64)*\n\n\`${subscription}\``, { parse_mode: 'Markdown', ...Markup.inlineKeyboard([[Markup.button.copyText('📋 نسخ الاشتراك', subscription)]]) });
     }
 };
 
